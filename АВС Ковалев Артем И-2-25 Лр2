@@ -1,0 +1,68 @@
+#include <iostream>
+#include <vector>
+#include <iomanip>
+#include <bitset>
+#include <cmath>
+#include <limits>
+
+union FloatPointer {
+    float f;
+    struct {
+        unsigned int mantissa : 23;
+        unsigned int exponent : 8;
+        unsigned int sign : 1;
+    } parts;
+    uint32_t raw;
+};
+
+void printIEEE754(float num) {
+    FloatPointer fp;
+    fp.f = num;
+
+    std::cout << "shislo " << std::setw(10) << fp.f
+        << " | znak " << fp.parts.sign
+        << " | exponenta " << std::bitset<8>(fp.parts.exponent)
+        << " | mantissa " << std::bitset<23>(fp.parts.mantissa)
+        << " | HEX: 0x" << std::hex << fp.raw << std::dec << std::endl;
+}
+
+float findMaximum(const std::vector<float>& arr) {
+    if (arr.empty()) return 0.0f;
+
+    float maxVal = arr[0];
+
+    for (float x : arr) {
+    
+        if (std::isnan(maxVal) || x > maxVal) {
+            maxVal = x;
+        }
+    }
+    return maxVal;
+}
+
+int main() {
+
+    std::vector<float> data = {
+        1.5f,
+        -2.75f,
+        10.25f,
+        0.0f,
+        -0.0f,
+        std::numeric_limits<float>::infinity(),
+        -std::numeric_limits<float>::infinity()
+    };
+
+    std::cout << " IEEE 754:" << std::endl;
+    std::cout << std::string(90, '-') << std::endl;
+
+    for (float n : data) {
+        printIEEE754(n);
+    }
+    float maxResult = findMaximum(data);
+    std::cout << std::string(90, '-') << std::endl;
+    std::cout << "max masiv " << maxResult << std::endl;
+    std::cout << "Bitu ";
+    printIEEE754(maxResult);
+
+    return 0;
+}
